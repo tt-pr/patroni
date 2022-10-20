@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  etcd:
+    image: ubuntu-etcd:20.04
+    build:
+      context: .
+      dockerfile: ./etcd.Dockerfile
+    environment:
+      TZ: Asia/Jerusalem
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+      - "7001:7001"
+    volumes:
+      - ./data:/etcddata
+    # command: etcd --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://172.16.107.3:2379
+    command: >
+      bash -c "etcd  --name etcd2 
+      --advertise-client-urls http://172.18.12.178:2379,http://172.18.12.178:7001  
+      --listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:7001  
+      --initial-advertise-peer-urls http://172.18.12.178:2380  
+      --listen-peer-urls http://0.0.0.0:2380  
+      --initial-cluster-token etcd-cluster-1  
+      --initial-cluster etcd2=http://172.18.12.178:2380,etcd1=http://172.16.107.1:2380,etcd3=http://172.30.10.178:2380  
+      --initial-cluster-state new
+      --data-dir /etcddata"

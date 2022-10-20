@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  postgres:
+    image: patroni-image:11
+    build:
+      context: .
+      dockerfile: ./pg-patroni-k.Dockerfile
+    environment:
+      TZ: Asia/Jerusalem
+      POSTGRES_DB: "ttdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123"
+      # PGDATA: "/home/postgres/data"
+    volumes:
+      # - ../2. Init Database:/docker-entrypoint-initdb.d
+      - ./patroni1new.yml:/home/postgres/patroni.yml
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - "8008:8008"
+      - "6432:5432"
+    # command: patroni /patroni.yml
+    command: /usr/bin/python3 /usr/local/bin/patroni /home/postgres/patroni.yml
